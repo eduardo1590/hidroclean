@@ -259,11 +259,33 @@
         const form = document.getElementById('leadForm');
         const success = document.getElementById('successMsg');
 
-        form.addEventListener('submit', (e) => {
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            form.classList.add('hidden');
-            success.classList.remove('hidden');
-            console.log("Lead de HidroClean capturado con éxito");
+            
+            // Recopilamos los datos del formulario
+            const formData = {
+                telefono: form.querySelector('input[type="tel"]').value,
+                motor: form.querySelector('input[name="combustible"]:checked').value,
+                cilindros: form.querySelector('select').value
+            };
+
+            try {
+                // Enviamos a Google Sheets (Sustituye la URL por la tuya)
+                const response = await fetch('https://script.google.com/macros/s/AKfycbxkCEFAblpDOG_vVAZnHvt3I19XMLuEbHc03Qs-em3afaYC1M05PA9bbYomaOjxCvfN/exec', {
+                    method: 'POST',
+                    mode: 'no-cors', // Importante para Google Apps Script
+                    cache: 'no-cache',
+                    body: JSON.stringify(formData)
+                });
+
+                // Mostramos mensaje de éxito
+                form.style.display = 'none';
+                success.classList.remove('hidden');
+                
+            } catch (error) {
+                console.error('Error al enviar:', error);
+                alert('Hubo un problema. Por favor, inténtalo de nuevo.');
+            }
         });
 
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
